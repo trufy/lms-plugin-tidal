@@ -462,8 +462,8 @@ sub getFavorites {
 	my $userId = $self->userId || return $cb->();
 
 	# the collection (favourites) is listed alphabetically unless the user prefers the date it was added
-	my $byDate = ($prefs->get('favoritesOrder') || '') eq 'DATE';
-	my $cacheKey = "tidal_favs_$type:$userId" . ($byDate ? ':date' : '');
+	my $order = $prefs->get('favoritesOrder') || '';
+	my $cacheKey = "tidal_favs_$type:$userId:$order";
 
 	# verify if that type has been updated and force refresh (don't confuse adding
 	# a playlist to favorites with changing the *content* of a playlist)
@@ -498,7 +498,7 @@ sub getFavorites {
 		},{
 			_nocache => 1,
 			limit => MAX_LIMIT,
-			$byDate ? (
+			$order eq 'DATE' ? (
 				order => 'DATE',
 				orderDirection => 'DESC',
 			) : (),
